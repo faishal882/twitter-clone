@@ -12,12 +12,19 @@
       integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
       crossorigin="anonymous"
     />
+    <style>
+      .bg-tweetme {
+        background-color: #8e1f1f !important;
+      }
+    </style>
 
     <title>Tweetme {% block head_title %} {% endblock head_title%}</title>
   </head>
   <body>
-    {% block content %} {% endblock content %}
-
+    {% include "components/navbar.html" %}
+    <div class="container">
+      {% block content %} {% endblock content %}
+    </div>
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->
