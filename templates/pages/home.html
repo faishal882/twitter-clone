@@ -1,9 +1,17 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block head_title %} this is amazing!!!! {% endblock
+head_title%} {% block content %} welcome to tweetme
 
-{% block head_title %}
-this is amazing!!!!
-{% endblock head_title%}
+<script>
+  const xhr = new XMLHttpRequest();
+  const method = "GET";
+  const url = "/tweets";
+  const responseType = "json";
 
-{% block content %}
-welcome to tweetme
+  xhr.responseType = responseType;
+  xhr.open(method, url);
+  xhr.onload = function () {
+    console.log(xhr.response);
+  };
+  xhr.send();
+</script>
 {% endblock content %}
