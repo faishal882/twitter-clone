@@ -1,4 +1,8 @@
-{% extends 'base.html' %} {% block head_title %} this is amazing!!!! {% endblock head_title%} {% block content %}
+{% extends 'base.html' %} 
+
+{% block head_title %} this is amazing!!!! {% endblock head_title%} 
+
+{% block content %}
 
 <div class="row text-center">
   <div class="col">
@@ -6,9 +10,21 @@
   </div>
 </div>
 
-<div class="row" id="tweets">
- loadin...
+<div class="row mb-3">
+ <div class="col-md-4 mx-auto col-10">
+   <form  method="POST" action="/create-tweet" class="form">
+      {% csrf_token %}
+    <input type="hidden" value="/" name="next" />
+    <textarea name="content" class="form-control" placeholder="Your Tweet" ></textarea>
+    <button class="btn btn-primary" type="submit">Tweet</button>
+   </form>
+ </div>
 </div>
+
+<div class='row' id='tweets'>
+    Loading...
+</div>
+
 <script>
   const tweetsElement = document.getElementById("tweets");
   // tweetsElement.innerHTML = "Loading..."
