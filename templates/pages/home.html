@@ -145,13 +145,13 @@
 
   loadTweets(tweetsContainerElement);
 
-  function handleDidLike(tweet_id, currentCount) {
+  function handleTweetActionBtn(tweet_id, currentCount, action) {
     console.log(tweet_id, currentCount);
     const url = "/api/tweets/action";
     const method = "POST";
     const data = JSON.stringify({
       id: tweet_id,
-      action: "like"
+      action: action,
     });
     const xhr = new XMLHttpRequest();
     const csrftoken = getCookie("csrftoken");
@@ -169,13 +169,33 @@
 
   function LikeBtn(tweet) {
     return (
-      "<button class='btn btn-primary btn-sm' onClick=handleDidLike(" +
+      "<button class='btn btn-primary btn-sm' onClick=handleTweetActionBtn(" +
       tweet.id +
       "," +
       tweet.likes +
-      ")>" +
+      ",'like'" + ")>" +
       tweet.likes +
       " Likes</button>"
+    );
+  }
+
+  function UnLikeBtn(tweet) {
+    return (
+      "<button class='btn btn-outline-primary btn-sm' onClick=handleTweetActionBtn(" +
+      tweet.id +
+      "," +
+      tweet.likes +
+      ",'unlike'" + ")>UnLike</button>"
+    );
+  }
+
+  function RetweetBtn(tweet) {
+    return (
+      "<button class='btn btn-outline-success btn-sm' onClick=handleTweetActionBtn(" +
+      tweet.id +
+      "," +
+      tweet.likes +
+      ",'retweet'" + ")>Retweet</button>"
     );
   }
 
@@ -187,6 +207,8 @@
       tweet.content +
       "</P><div class='btn-group'>" +
       LikeBtn(tweet) +
+      UnLikeBtn(tweet) +
+      RetweetBtn(tweet) +
       "</div></div>";
     return formattedTweet;
   }
