@@ -1,4 +1,4 @@
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
 
 {% block head_title %} this is amazing!!!! {% endblock head_title%} 
 
@@ -19,12 +19,10 @@
       id="tweet-create-form"
     >
       {% csrf_token %}
-      <div class="d-none alert alert-danger" id="tweet-create-form-error">
-
-      </div>
+      <div class="d-none alert alert-danger" id="tweet-create-form-error"></div>
       <input type="hidden" value="/" name="next" />
       <textarea
-        required='required'
+        required="required"
         name="content"
         class="form-control"
         placeholder="Your Tweet"
@@ -37,16 +35,31 @@
 <div class="row" id="tweets">Loading...</div>
 
 <script>
-  
+  function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      var cookies = document.cookie.split(";");
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i].trim();
+        // Does this cookie string begin with the name we want?
+        if (cookie.substring(0, name.length + 1) === name + "=") {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
   function handleTweetFormErrorMsg(msg, display) {
-    var myErrorDiv = document.getElementById("tweet-create-form-error")
+    var myErrorDiv = document.getElementById("tweet-create-form-error");
     if (display === true) {
       // show error
-      myErrorDiv.setAttribute("class", "d-block alert alert-danger")
-      myErrorDiv.innerText = msg
+      myErrorDiv.setAttribute("class", "d-block alert alert-danger");
+      myErrorDiv.innerText = msg;
     } else {
       // Hide error
-      myErrorDiv.setAttribute("class", "d-none alert alert-danger")
+      myErrorDiv.setAttribute("class", "d-none alert alert-danger");
     }
   }
 
@@ -60,44 +73,43 @@
     const responseType = "json";
     xhr.responseType = responseType;
     xhr.open(method, url);
-    xhr.setRequestHeader("HTTP_X_REQUSETED_WITH", "XMLHttpRequest")
-    xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest")
+    xhr.setRequestHeader("HTTP_X_REQUSETED_WITH", "XMLHttpRequest");
+    xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     xhr.onload = function () {
       if (xhr.status === 201) {
-        handleTweetFormErrorMsg("", false)
-       const newTweetJson = xhr.response;
-       const newTweetElement = formatTweetElement(newTweetJson)
-       const ogHtml = tweetsContainerElement.innerHTML
-       tweetsContainerElement.innerHTML = newTweetElement + ogHtml
-       myForm.reset()
-      } else if (xhr.status ===  400){
-        const errorJson = xhr.response
-        const contentError = errorJson.content
+        handleTweetFormErrorMsg("", false);
+        const newTweetJson = xhr.response;
+        const newTweetElement = formatTweetElement(newTweetJson);
+        const ogHtml = tweetsContainerElement.innerHTML;
+        tweetsContainerElement.innerHTML = newTweetElement + ogHtml;
+        myForm.reset();
+      } else if (xhr.status === 400) {
+        const errorJson = xhr.response;
+        const contentError = errorJson.content;
         let contentErrorMsg;
         if (contentError) {
-          contentErrorMsg = contentError[0]
+          contentErrorMsg = contentError[0];
           if (contentErrorMsg) {
-            handleTweetFormErrorMsg(contentErrorMsg, true)
+            handleTweetFormErrorMsg(contentErrorMsg, true);
           } else {
-            alert("Another error occured, please try again.")
+            alert("Another error occured, please try again.");
           }
         } else {
-          alert("Another error occured, please try again.")
-        } 
+          alert("Another error occured, please try again.");
+        }
       } else if (xhr.status === 401) {
-        alert("you must login!")
-        window.location.href = "/login"
+        alert("you must login!");
+        window.location.href = "/login";
       } else if (xhr.status === 403) {
-        alert("you must login!")
-        window.location.href = "/login"
-      }
-      else if (xhr.status === 500) {
-        alert("Internal Server error occured")
+        alert("you must login!");
+        window.location.href = "/login";
+      } else if (xhr.status === 500) {
+        alert("Internal Server error occured");
       }
     };
     xhr.onerror = function () {
-      alert("error occured please try again later")
-    }
+      alert("error occured please try again later");
+    };
     xhr.send(myFormData);
   }
 
@@ -128,13 +140,31 @@
       tweetsElement.innerHTML = finalTweetStr;
       // console.log(listedItems);
     };
-    xhr.send()
+    xhr.send();
   }
 
   loadTweets(tweetsContainerElement);
 
   function handleDidLike(tweet_id, currentCount) {
-    // console.log(tweet_id, currentCount);
+    console.log(tweet_id, currentCount);
+    const url = "/api/tweets/action";
+    const method = "POST";
+    const data = JSON.stringify({
+      id: tweet_id,
+      action: "like"
+    });
+    const xhr = new XMLHttpRequest();
+    const csrftoken = getCookie("csrftoken");
+    xhr.open(method, url);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.setRequestHeader("HTTP_X_REQUSETED_WITH", "XMLHttpRequest");
+    xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+    xhr.onload = function () {
+      // react.js this handle the state much better
+      loadTweets(tweetsContainerElement);
+    };
+    xhr.send(data);
   }
 
   function LikeBtn(tweet) {
