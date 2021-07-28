@@ -87,6 +87,9 @@
       } else if (xhr.status === 401) {
         alert("you must login!")
         window.location.href = "/login"
+      } else if (xhr.status === 403) {
+        alert("you must login!")
+        window.location.href = "/login"
       }
       else if (xhr.status === 500) {
         alert("Internal Server error occured")
@@ -112,7 +115,7 @@
     xhr.open(method, url);
     xhr.onload = function () {
       const serverRresponse = xhr.response;
-      var listedItems = serverRresponse.response;
+      var listedItems = serverRresponse;
       var finalTweetStr = "";
       var i;
       for (i = 0; i < listedItems.length; i++) {
