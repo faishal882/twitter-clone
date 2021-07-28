@@ -19,6 +19,9 @@
       id="tweet-create-form"
     >
       {% csrf_token %}
+      <div class="d-none alert alert-danger" id="tweet-create-form-error">
+
+      </div>
       <input type="hidden" value="/" name="next" />
       <textarea
         required='required'
@@ -34,6 +37,19 @@
 <div class="row" id="tweets">Loading...</div>
 
 <script>
+  
+  function handleTweetFormErrorMsg(msg, display) {
+    var myErrorDiv = document.getElementById("tweet-create-form-error")
+    if (display === true) {
+      // show error
+      myErrorDiv.setAttribute("class", "d-block alert alert-danger")
+      myErrorDiv.innerText = msg
+    } else {
+      // Hide error
+      myErrorDiv.setAttribute("class", "d-none alert alert-danger")
+    }
+  }
+
   function handleTweetCreateFormDidSubmit(event) {
     event.preventDefault();
     const myForm = event.target;
@@ -48,13 +64,37 @@
     xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest")
     xhr.onload = function () {
       if (xhr.status === 201) {
+        handleTweetFormErrorMsg("", false)
        const newTweetJson = xhr.response;
        const newTweetElement = formatTweetElement(newTweetJson)
        const ogHtml = tweetsContainerElement.innerHTML
        tweetsContainerElement.innerHTML = newTweetElement + ogHtml
        myForm.reset()
+      } else if (xhr.status ===  400){
+        const errorJson = xhr.response
+        const contentError = errorJson.content
+        let contentErrorMsg;
+        if (contentError) {
+          contentErrorMsg = contentError[0]
+          if (contentErrorMsg) {
+            handleTweetFormErrorMsg(contentErrorMsg, true)
+          } else {
+            alert("Another error occured, please try again.")
+          }
+        } else {
+          alert("Another error occured, please try again.")
+        } 
+      } else if (xhr.status === 401) {
+        alert("you must login!")
+        window.location.href = "/login"
+      }
+      else if (xhr.status === 500) {
+        alert("Internal Server error occured")
       }
     };
+    xhr.onerror = function () {
+      alert("error occured please try again later")
+    }
     xhr.send(myFormData);
   }
 
