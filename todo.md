@@ -5,6 +5,8 @@
      -> User Permision
           -> Delete
           -> Retweeting
+               -> Read only serialize
+               -> Create only serializer
           -> Liking
 
 2. Users
@@ -26,3 +28,13 @@ Long term todos
 - Notifications
 - DM
 - Explore (finding hashtags)
+
+
+*** Logic of Retweet ***
+ ->Tweet
+    -> Retweet (comment on the og tweet)
+        -> Retweet of tweet
+
+-> Retweet of tweet
+     -> Retweet
+          ->Tweet
