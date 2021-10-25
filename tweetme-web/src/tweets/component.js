@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { loadTweets } from "../lookup";
+import { loadTweets, createTweet } from "../lookup";
 
 export function TweetsComponent(props) {
   const textAreaRef = React.createRef();
@@ -8,11 +8,15 @@ export function TweetsComponent(props) {
     event.preventDefault();
     const newVal = textAreaRef.current.value;
     let tempNewTweets = [...newTweets];
-    tempNewTweets.unshift({
-      content: newVal,
-      likes: 0,
-      id: 234,
+    createTweet(newVal, (response, status) => {
+      if (status === 201) {
+        tempNewTweets.unshift(response);
+      } else {
+        console.log(response);
+        alert("An error occured please try again ");
+      }
     });
+
     setNewTweets(tempNewTweets);
     textAreaRef.current.value = "";
   };
@@ -37,6 +41,7 @@ export function TweetsComponent(props) {
 export function TweetList(props) {
   const [tweetsInit, setTweetsInit] = useState([]);
   const [tweets, setTweets] = useState([]);
+  const [tweetsDidSet, setTweetsDidSet] = useState(false);
 
   useEffect(() => {
     const final = [...props.newTweets.concat(tweetsInit)];
@@ -45,16 +50,19 @@ export function TweetList(props) {
     }
   }, [props.newTweets, tweetsInit, tweets]);
   useEffect(() => {
-    const myCallback = (response, status) => {
-      if (status === 200) {
-        // const finalTweetsInit = [...response].concat(tweetsInit);
-        setTweetsInit(response);
-      } else {
-        alert("There was an error");
-      }
-    };
-    loadTweets(myCallback);
-  }, [tweetsInit]);
+    if (tweetsDidSet === false) {
+      const myCallback = (response, status) => {
+        if (status === 200) {
+          // const finalTweetsInit = [...response].concat(tweetsInit);
+          setTweetsInit(response);
+          setTweetsDidSet(true);
+        } else {
+          alert("There was an error");
+        }
+      };
+      loadTweets(myCallback);
+    }
+  }, [tweetsInit, tweetsDidSet, setTweetsDidSet]);
   return tweets.map((item, index) => {
     return (
       <Tweet

@@ -26,7 +26,7 @@ SECRET_KEY = 'o+x7r8!s)l=e&hk!hb*uc!)8g)pv=#sg7do59823d#_f$k5v96'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'localhost:3000']
 LOGIN_URL = "/login"
 MAX_TWEET_LENGTH = 240
 TWEET_ACTION_OPTIONS = ['like', 'unlike', 'retweet']
@@ -143,13 +143,21 @@ DEFAULT_RENDERER_CLASSES = [
     'rest_framework.renderers.JSONRenderer',
 ]
 
+
+DEFAULT_AUTHENTICATION_CLASSES = [
+    'rest_framework.authentication.SessionAuthentication'
+]
+
 if DEBUG:
-    DEFAULT_RENDERER_CLASSES += ['rest_framework.renderers.BrowsableAPIRenderer',
-                                 ]
+
+    DEFAULT_RENDERER_CLASSES += [
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ]
+    DEFAULT_AUTHENTICATION_CLASSES += [
+        'tweetme.rest_api.dev.DevAuthentication'
+    ]
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        'rest_framework.authentication.SessionAuthentication'
-    ],
-    "DEFAULT_RENDERER_CLASSES":  DEFAULT_RENDERER_CLASSES
+    'DEFAULT_AUTHENTICATION_CLASSES': DEFAULT_AUTHENTICATION_CLASSES,
+    'DEFAULT_RENDERER_CLASSES': DEFAULT_RENDERER_CLASSES
 }
