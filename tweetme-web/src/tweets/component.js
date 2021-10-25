@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { loadTweets, createTweet } from "../lookup";
+import { apiTweetCreate, apiTweetList } from "./lookup";
 
 export function TweetsComponent(props) {
   const textAreaRef = React.createRef();
   const [newTweets, setNewTweets] = useState([]);
+  const handleBackendUpdate = (response, status) => {
+    let tempNewTweets = [...newTweets];
+    if (status === 201) {
+      tempNewTweets.unshift(response);
+      setNewTweets(tempNewTweets);
+    } else {
+      console.log(response);
+      alert("An error occured please try again ");
+    }
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const newVal = textAreaRef.current.value;
-    let tempNewTweets = [...newTweets];
-    createTweet(newVal, (response, status) => {
-      if (status === 201) {
-        tempNewTweets.unshift(response);
-      } else {
-        console.log(response);
-        alert("An error occured please try again ");
-      }
-    });
-
-    setNewTweets(tempNewTweets);
+    apiTweetCreate(newVal, handleBackendUpdate);
     textAreaRef.current.value = "";
   };
   return (
@@ -51,7 +52,7 @@ export function TweetList(props) {
   }, [props.newTweets, tweetsInit, tweets]);
   useEffect(() => {
     if (tweetsDidSet === false) {
-      const myCallback = (response, status) => {
+      const handleTweetListLookup = (response, status) => {
         if (status === 200) {
           // const finalTweetsInit = [...response].concat(tweetsInit);
           setTweetsInit(response);
@@ -60,7 +61,7 @@ export function TweetList(props) {
           alert("There was an error");
         }
       };
-      loadTweets(myCallback);
+      apiTweetList(handleTweetListLookup);
     }
   }, [tweetsInit, tweetsDidSet, setTweetsDidSet]);
   return tweets.map((item, index) => {

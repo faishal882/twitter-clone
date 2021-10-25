@@ -18,19 +18,22 @@ ALLOWED_HOSTS = settings.ALLOWED_HOSTS
 
 # Create your views here.
 
+
 def home_view(request, *args, **kwargs):
     return render(request, "pages/home.html")
 
 
-@api_view(['POST']) # http method the client == POST
+@api_view(['POST'])  # http method the client == POST
 @permission_classes([IsAuthenticated])
-@authentication_classes([SessionAuthentication])
+# @authentication_classes([SessionAuthentication])
 def tweet_create_view(request, *args, **kwargs):
-    serializer = TweetCreateSerializer(data=request.POST)
-    if serializer.is_valid(raise_exception = True):
+    print(request.data)
+    serializer = TweetCreateSerializer(data=request.data)
+    if serializer.is_valid(raise_exception=True):
         serializer.save(user=request.user)
         return Response(serializer.data, status=201)
     return Response({}, status=400)
+
 
 @api_view(['GET'])
 def tweet_list_view(request, *args, **kwargs):
@@ -67,7 +70,6 @@ def tweet_delete_view(request, tweet_id, *args, **kwargs):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def tweet_action_view(request, *args, **kwargs):
-
     '''
     id is required.
     Action options are: like, unlike, retweet
@@ -92,14 +94,12 @@ def tweet_action_view(request, *args, **kwargs):
             serializer = TweetSerializer(obj)
             return Response(serializer.data, status=200)
         elif action == "retweet":
-            new_tweet = Tweet.objects.create(user=request.user, parent=obj, content=content)
+            new_tweet = Tweet.objects.create(
+                user=request.user, parent=obj, content=content)
             serializer = TweetSerializer(new_tweet)
             return Response(serializer.data, status=201)
 
     return Response({}, status=200)
-
-
-
 
 
 # def tweet_create_view_pure_django(request, *args, **kwargs):
@@ -126,7 +126,6 @@ def tweet_action_view(request, *args, **kwargs):
 #             return JsonResponse(form.errors, status=400)
 
 #     return render(request, "components/form.html", context={"form": form})
-
 
 
 # def tweet_list_view_pure_django(request, *args, **kwargs):

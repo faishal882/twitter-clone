@@ -14,7 +14,7 @@ function getCookie(name) {
   return cookieValue;
 }
 
-function lookup(method, endpoint, callback, data) {
+export function backendLookup(method, endpoint, callback, data) {
   let jsonData;
   if (data) {
     jsonData = JSON.stringify(data);
@@ -29,11 +29,10 @@ function lookup(method, endpoint, callback, data) {
   xhr.setRequestHeader("Content-Type", "application/json");
 
   if (csrftoken) {
-    xhr.setRequestHeader("HTTP_X_REQUSETED_WITH", "XMLHttpRequest");
+    // xhr.setRequestHeader("HTTP_X_REQUSETED_WITH", "XMLHttpRequest");
     xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     xhr.setRequestHeader("X-CSRFToken", csrftoken);
   }
-
   xhr.onload = function () {
     callback(xhr.response, xhr.status);
   };
@@ -41,14 +40,6 @@ function lookup(method, endpoint, callback, data) {
     console.log(e);
     callback({ message: "The request was an error" }, 400);
   };
-
+  console.log(jsonData);
   xhr.send(jsonData);
-}
-
-export function createTweet(newTweet, callback) {
-  lookup("POST", "/tweets/create/", callback, { content: newTweet });
-}
-
-export function loadTweets(callback) {
-  lookup("GET", "/tweets", callback);
 }
