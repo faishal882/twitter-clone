@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { apiTweetCreate, apiTweetList } from "./lookup";
+import { apiTweetCreate, apiTweetList, apiTweetAction } from "./lookup";
 
 export function TweetsComponent(props) {
   const textAreaRef = React.createRef();
@@ -78,25 +78,22 @@ export function TweetList(props) {
 export function ActionBtn(props) {
   const { tweet, action } = props;
   const [likes, setLikes] = useState(tweet.likes ? tweet.likes : 0);
-  const [userLike, setUserLike] = useState(
-    tweet.userLike === true ? false : true
-  );
+  // const [userLike, setUserLike] = useState(tweet.userLike === true ? false : true);
   const className = props.className
     ? props.className
     : "btn btn-primary btn-sm";
   const actionDiplay = action.display ? action.display : "Action";
 
+  const handleActionBackendEvent = (response, status) => {
+    console.log(response, status);
+    if (status === 200) {
+      setLikes(response.likes);
+      // setUserLike(true);
+    }
+  };
   const handleClick = (event) => {
     event.preventDefault();
-    if (action.type === "like") {
-      if (userLike === true) {
-        setLikes(likes - 1);
-        setUserLike(false);
-      } else {
-        setLikes(likes + 1);
-        setUserLike(true);
-      }
-    }
+    apiTweetAction(tweet.id, action.type, handleActionBackendEvent);
   };
   const display =
     action.type === "like" ? `${likes} ${actionDiplay}` : actionDiplay;
@@ -108,6 +105,18 @@ export function ActionBtn(props) {
   );
 }
 
+export function ParentTweet(props) {
+  const { tweet } = props;
+  return tweet.parent ? (
+    <div className="row">
+      <div className="col-11 mx-auto p-3 border rounded">
+        <p className="mb-0 text-muted small">Retweet</p>
+        <Tweet className={" "} tweet={tweet.parent} />
+      </div>
+    </div>
+  ) : null;
+}
+
 export function Tweet(props) {
   const { tweet } = props;
   const className = props.className
@@ -115,9 +124,13 @@ export function Tweet(props) {
     : "col-10 mx-auto col-md-6";
   return (
     <div className={className}>
-      <p>
-        {tweet.id} - {tweet.content}
-      </p>
+      <div>
+        {" "}
+        <p>
+          {tweet.id} - {tweet.content}
+        </p>
+      </div>
+      <ParentTweet tweet={tweet} />
       <div className="btn btn-group">
         <ActionBtn tweet={tweet} action={{ type: "like", display: "Likes" }} />
         <ActionBtn
