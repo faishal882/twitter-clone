@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { apiTweetCreate, apiTweetList, apiTweetAction } from "./lookup";
 
 export function TweetsComponent(props) {
+  console.log(props)
   const textAreaRef = React.createRef();
   const [newTweets, setNewTweets] = useState([]);
   const handleBackendUpdate = (response, status) => {
@@ -64,10 +65,20 @@ export function TweetList(props) {
       apiTweetList(handleTweetListLookup);
     }
   }, [tweetsInit, tweetsDidSet, setTweetsDidSet]);
+
+  const handleDidRetweet = (newTweet) => {
+    const updateTweetsInit = [...tweetsInit];
+    updateTweetsInit.unshift(newTweet);
+    setTweetsInit(updateTweetsInit);
+    const updateFinalTweets = [...tweets];
+    updateFinalTweets.unshift(newTweet);
+    setTweets(updateFinalTweets);
+  };
   return tweets.map((item, index) => {
     return (
       <Tweet
         tweet={item}
+        didRetweet={handleDidRetweet}
         className="my-5 py-5 border bg-white text-dark"
         key={`${index}-${item.id}`}
       />
@@ -76,9 +87,10 @@ export function TweetList(props) {
 }
 
 export function ActionBtn(props) {
-  const { tweet, action } = props;
-  const [likes, setLikes] = useState(tweet.likes ? tweet.likes : 0);
-  // const [userLike, setUserLike] = useState(tweet.userLike === true ? false : true);
+  const { tweet, action, didPerformACtion } = props;
+
+  const likes = tweet.likes ? tweet.likes : 0;
+
   const className = props.className
     ? props.className
     : "btn btn-primary btn-sm";
@@ -86,8 +98,9 @@ export function ActionBtn(props) {
 
   const handleActionBackendEvent = (response, status) => {
     console.log(response, status);
-    if (status === 200) {
-      setLikes(response.likes);
+    if ((status === 200 || status === 201) && didPerformACtion) {
+      // setLikes(response.likes);
+      didPerformACtion(response, status);
       // setUserLike(true);
     }
   };
@@ -111,17 +124,30 @@ export function ParentTweet(props) {
     <div className="row">
       <div className="col-11 mx-auto p-3 border rounded">
         <p className="mb-0 text-muted small">Retweet</p>
-        <Tweet className={" "} tweet={tweet.parent} />
+        <Tweet className={" "} tweet={tweet.parent} hideActions />
       </div>
     </div>
   ) : null;
 }
 
 export function Tweet(props) {
-  const { tweet } = props;
+  const { tweet, didRetweet, hideActions } = props;
+  const [actionTweet, setActionTweet] = useState(
+    props.tweet ? props.tweet : null
+  );
   const className = props.className
     ? props.className
     : "col-10 mx-auto col-md-6";
+  const handlePerformAction = (newActionTweet, status) => {
+    if (status === 200) {
+      setActionTweet(newActionTweet);
+    } else if (status === 201) {
+      // let the tweet list know
+      if (didRetweet) {
+        didRetweet(newActionTweet);
+      }
+    }
+  };
   return (
     <div className={className}>
       <div>
@@ -131,17 +157,25 @@ export function Tweet(props) {
         </p>
       </div>
       <ParentTweet tweet={tweet} />
-      <div className="btn btn-group">
-        <ActionBtn tweet={tweet} action={{ type: "like", display: "Likes" }} />
-        <ActionBtn
-          tweet={tweet}
-          action={{ type: "unlike", display: "Unlike" }}
-        />
-        <ActionBtn
-          tweet={tweet}
-          action={{ type: "retweet", display: "Retweet" }}
-        />
-      </div>
+      {actionTweet && hideActions != true && (
+        <div className="btn btn-group">
+          <ActionBtn
+            tweet={actionTweet}
+            didPerformACtion={handlePerformAction}
+            action={{ type: "like", display: "Likes" }}
+          />
+          <ActionBtn
+            tweet={actionTweet}
+            didPerformACtion={handlePerformAction}
+            action={{ type: "unlike", display: "Unlike" }}
+          />
+          <ActionBtn
+            tweet={actionTweet}
+            didPerformACtion={handlePerformAction}
+            action={{ type: "retweet", display: "Retweet" }}
+          />
+        </div>
+      )}
     </div>
   );
 }

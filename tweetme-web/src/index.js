@@ -11,7 +11,11 @@ if (appEl) {
 }
 const tweetsEl = document.getElementById("tweetme");
 if (tweetsEl) {
-  ReactDOM.render(<TweetsComponent />, tweetsEl);
+  console.log(tweetsEl.dataset);
+  ReactDOM.render(
+    <TweetsComponent username={tweetsEl.dataset.username} />,
+    tweetsEl
+  );
 }
 
 // If you want to start measuring performance in your app, pass a function
