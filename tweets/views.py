@@ -38,6 +38,9 @@ def tweet_create_view(request, *args, **kwargs):
 @api_view(['GET'])
 def tweet_list_view(request, *args, **kwargs):
     qs = Tweet.objects.all()
+    username = request.GET.get('username')
+    if username != None:
+        qs = qs.filter(user__username__iexact=username)
     serializer = TweetSerializer(qs, many=True)
     # tweets_list = [x.serialize() for x in qs]
     return Response(serializer.data)
@@ -46,6 +49,7 @@ def tweet_list_view(request, *args, **kwargs):
 @api_view(['GET'])
 def tweet_detail_view(request, tweet_id, *args, **kwargs):
     qs = Tweet.objects.filter(id=tweet_id)
+
     if not qs.exists():
         return Response({}, status=404)
     obj = qs.first()

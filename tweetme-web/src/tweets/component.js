@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import { apiTweetCreate, apiTweetList, apiTweetAction } from "./lookup";
 
 export function TweetsComponent(props) {
-  console.log(props)
   const textAreaRef = React.createRef();
   const [newTweets, setNewTweets] = useState([]);
+
+  const canTweet = props.canTweet === "false" ? false : true;
   const handleBackendUpdate = (response, status) => {
     let tempNewTweets = [...newTweets];
     if (status === 201) {
@@ -24,18 +25,20 @@ export function TweetsComponent(props) {
   };
   return (
     <div className={props.className}>
-      <div className="col-12 mb-3">
-        <form onSubmit={handleSubmit}>
-          <textarea
-            ref={textAreaRef}
-            required={true}
-            className="form-control"
-            name="tweet"
-          ></textarea>
-          <button className="btn btn-primary my-3">Tweet</button>
-        </form>
-      </div>
-      <TweetList newTweets={newTweets} />
+      {canTweet === true && (
+        <div className="col-12 mb-3">
+          <form onSubmit={handleSubmit}>
+            <textarea
+              ref={textAreaRef}
+              required={true}
+              className="form-control"
+              name="tweet"
+            ></textarea>
+            <button className="btn btn-primary my-3">Tweet</button>
+          </form>
+        </div>
+      )}
+      <TweetList newTweets={newTweets} {...props} />
     </div>
   );
 }
@@ -62,9 +65,9 @@ export function TweetList(props) {
           alert("There was an error");
         }
       };
-      apiTweetList(handleTweetListLookup);
+      apiTweetList(props.username, handleTweetListLookup);
     }
-  }, [tweetsInit, tweetsDidSet, setTweetsDidSet]);
+  }, [tweetsInit, tweetsDidSet, setTweetsDidSet, props.username]);
 
   const handleDidRetweet = (newTweet) => {
     const updateTweetsInit = [...tweetsInit];
@@ -157,7 +160,7 @@ export function Tweet(props) {
         </p>
       </div>
       <ParentTweet tweet={tweet} />
-      {actionTweet && hideActions != true && (
+      {actionTweet && hideActions !== true && (
         <div className="btn btn-group">
           <ActionBtn
             tweet={actionTweet}
