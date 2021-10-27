@@ -22,6 +22,15 @@ export function Tweet(props) {
   const className = props.className
     ? props.className
     : "col-10 mx-auto col-md-6";
+
+  var path = window.location.pathname;
+  var match = path.match(/(?<tweetid>\d+)/);
+  var urltweetId = match ? match.groups.tweetid : -1;
+  const isDetail = `${tweet.id}` === `${urltweetId}`;
+  const handleLink = (event) => {
+    event.preventDefault();
+    window.location.href = `/${tweet.id}`;
+  };
   const handlePerformAction = (newActionTweet, status) => {
     if (status === 200) {
       setActionTweet(newActionTweet);
@@ -41,25 +50,36 @@ export function Tweet(props) {
         </p>
       </div>
       <ParentTweet tweet={tweet} />
-      {actionTweet && hideActions !== true && (
-        <div className="btn btn-group">
-          <ActionBtn
-            tweet={actionTweet}
-            didPerformACtion={handlePerformAction}
-            action={{ type: "like", display: "Likes" }}
-          />
-          <ActionBtn
-            tweet={actionTweet}
-            didPerformACtion={handlePerformAction}
-            action={{ type: "unlike", display: "Unlike" }}
-          />
-          <ActionBtn
-            tweet={actionTweet}
-            didPerformACtion={handlePerformAction}
-            action={{ type: "retweet", display: "Retweet" }}
-          />
-        </div>
-      )}
+
+      <div className="btn btn-group">
+        {actionTweet && hideActions !== true && (
+          <React.Fragment>
+            <ActionBtn
+              tweet={actionTweet}
+              didPerformACtion={handlePerformAction}
+              action={{ type: "like", display: "Likes" }}
+            />
+            <ActionBtn
+              tweet={actionTweet}
+              didPerformACtion={handlePerformAction}
+              action={{ type: "unlike", display: "Unlike" }}
+            />
+            <ActionBtn
+              tweet={actionTweet}
+              didPerformACtion={handlePerformAction}
+              action={{ type: "retweet", display: "Retweet" }}
+            />
+          </React.Fragment>
+        )}
+        {isDetail === true ? null : (
+          <button
+            className="btn btn-outline-primary btn-sm"
+            onClick={handleLink}
+          >
+            View
+          </button>
+        )}
+      </div>
     </div>
   );
 }

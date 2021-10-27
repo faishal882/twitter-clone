@@ -35,7 +35,7 @@
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div
+    <!-- <div
       class="tweetme-detail"
       data-tweet-id="220"
       data-class-name="col-6 mx-auto"
@@ -49,7 +49,8 @@
       class="tweetme-detail"
       data-tweet-id="210"
       data-class-name="col-6 mx-auto"
-    ></div>
+    ></div> -->
+    <div id="tweet-container"></div>
     <div id="tweetme" data-username="fm" data-can-tweet="false"></div>
     <!--
       This HTML file is a template.
@@ -61,5 +62,22 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    <script>
+      var path = window.location.pathname;
+      var idRegex = /(?<tweetid>\d+)/;
+      var match = path.match(idRegex);
+
+      if (match) {
+        var tweetId = match.groups.tweetid;
+        var tweetmeEl = document.getElementById("tweetme");
+        tweetmeEl.className = "d-none";
+        var tweetEl =
+          "<div class='tweetme-detail' data-tweet-id=" +
+          tweetId +
+          " data-class-name='col-6 mx-auto' ></div>";
+        var mainContainer = document.getElementById("tweet-container");
+        mainContainer.innerHTML = tweetEl;
+      }
+    </script>
   </body>
 </html>
