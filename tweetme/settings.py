@@ -42,9 +42,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # third-party
     'rest_framework',
-    "corsheaders",
+    'corsheaders',
     # Internal
-    "accounts",
+    'accounts',
+    'profiles',
     'tweets',
 ]
 
