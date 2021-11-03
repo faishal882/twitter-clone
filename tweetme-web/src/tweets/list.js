@@ -18,7 +18,7 @@ export function TweetList(props) {
       const handleTweetListLookup = (response, status) => {
         if (status === 200) {
           // const finalTweetsInit = [...response].concat(tweetsInit);
-          setTweetsInit(response);
+          setTweetsInit(response.results);
           setTweetsDidSet(true);
         } else {
           alert("There was an error");
