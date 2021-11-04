@@ -6,6 +6,7 @@ from django.urls import path, include, re_path
 # from django.views.generic import TemplateView
 
 from tweets.views import (
+    home_view,
     tweets_list_view,
     tweets_detail_view,
 )
@@ -13,8 +14,9 @@ from tweets.views import (
 from accounts.views import login_view, register_view, logout_view
 
 urlpatterns = [
+    path('', home_view),
     path('admin/', admin.site.urls),
-    path('', tweets_list_view),
+    path('global/', tweets_list_view),
     path('login', login_view),
     path('logout/', logout_view),
     path('register/', register_view),
