@@ -20,6 +20,8 @@ function ProfileBadge(props) {
       <p>
         <UserDisplay user={user} includeFullName hideLink />
       </p>
+      <p>Followers: {user.follower_count}</p>
+      <p>Following: {user.following_count}</p>
       <button onClick={handleFollowToggle} className="btn btn-primary">
         {currentVerb}
       </button>
