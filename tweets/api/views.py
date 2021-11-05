@@ -36,7 +36,8 @@ def get_paginated_queryset_response(qs, request):
     paginator = PageNumberPagination()
     paginator.page_size = 20
     paginated_qs = paginator.paginate_queryset(qs, request)
-    serializer = TweetSerializer(paginated_qs, many=True)
+    serializer = TweetSerializer(
+        paginated_qs, many=True, context={"request": request})
     return paginator.get_paginated_response(serializer.data)
 
 
@@ -55,7 +56,6 @@ def tweet_list_view(request, *args, **kwargs):
     if username != None:
         qs = qs.by_username(username)
     return get_paginated_queryset_response(qs, request)
-
 
 
 @api_view(['GET'])
