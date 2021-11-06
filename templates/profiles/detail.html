@@ -1,6 +1,9 @@
 {% extends 'base.html' %} {% block content %}
 
-<div class="tweetme-detail-profile-badge" data-username="{{ username }}"></div>
+<div
+  class="tweetme-detail-profile-badge mt-4 mb-5"
+  data-username="{{ username }}"
+></div>
 <div id="tweetme" data-username="{{ username }}" data-can-tweet="false"></div>
 
 {% endblock content %}

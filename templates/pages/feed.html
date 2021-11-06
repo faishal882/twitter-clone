@@ -3,10 +3,9 @@
 {% block content %}
 
 {% if request.user.is_authenticated %}
-   <div id="tweetme-feed"></div>
+<div id="tweetme-feed" class="mt-4"></div>
 {% else %}
-  <div id="tweetme"></div>
+<div id="tweetme"></div>
 {% endif %}
-
 
 {% endblock content %}
